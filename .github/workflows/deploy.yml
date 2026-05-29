@@ -1,0 +1,73 @@
+name: Deploy Quartz
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment, don't cancel in-progress runs
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # This repo only contains the vault (content/), not the Quartz engine,
+      # so we check it out separately and fetch the framework during the build.
+      - name: Checkout content repo
+        uses: actions/checkout@v4
+        with:
+          lfs: true            # attachments (*.png) are stored in Git LFS
+          path: repo
+
+      - name: Checkout Quartz v5 framework
+        uses: actions/checkout@v4
+        with:
+          repository: jackyzha0/quartz
+          ref: v5               # matches version 5.0.0 in your package.json
+          path: quartz
+
+      - name: Inject vault content into Quartz
+        run: |
+          rm -rf quartz/content
+          cp -r repo/content quartz/content
+          # Optional: if you keep a custom quartz.config.yaml in your repo root,
+          # it overrides the shipped defaults.
+          if [ -f repo/quartz.config.yaml ]; then
+            cp repo/quartz.config.yaml quartz/quartz.config.yaml
+          fi
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies and build
+        working-directory: quartz
+        run: |
+          npm ci
+          npx quartz plugin install
+          npx quartz build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: quartz/public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
