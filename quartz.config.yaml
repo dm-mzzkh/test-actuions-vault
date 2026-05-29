@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./quartz/plugins/quartz-plugins.schema.json
 configuration:
-  pageTitle: test-actuions-vault
+  pageTitle: quartz-actions-deploy-test
   pageTitleSuffix: ""
   enableSPA: true
   enablePopovers: true
@@ -9,7 +9,7 @@ configuration:
   locale: en-US
   # IMPORTANT: GitHub Pages project site lives under a subpath.
   # No protocol, no trailing slash.
-  baseUrl: dm-mzzkh.github.io/test-actuions-vault
+  baseUrl: dm-mzzkh.github.io/quartz-actions-deploy-test
   ignorePatterns:
     - private
     - templates

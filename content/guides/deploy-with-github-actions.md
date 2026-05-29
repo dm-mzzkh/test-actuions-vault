@@ -122,7 +122,7 @@ In `quartz.config.yaml`, set `baseUrl` to where the site actually lives.
 ```yaml
 configuration:
   pageTitle: My Digital Garden
-  baseUrl: <user>.github.io/<repo>   # e.g. dm-mzzkh.github.io/test-actuions-vault
+  baseUrl: <user>.github.io/<repo>   # e.g. dm-mzzkh.github.io/quartz-actions-deploy-test
   # ...rest of the plugins/theme
 ```
 
